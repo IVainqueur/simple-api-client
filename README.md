@@ -59,6 +59,15 @@ pnpm start
 - **Real-time Preview**: See your changes instantly
 - **Zero Config**: Start testing APIs immediately
 
+## 🌟 Support the Project
+
+If you find Simple API Client useful, consider:
+
+- **⭐ Star the Project**: Your star on [GitHub](https://github.com/IVainqueur/simple-api-client) helps others discover the project
+- **☕ Buy Me a Coffee**: Support development with a [small donation](https://www.buymeacoffee.com/ivainqueur)
+
+Your support helps keep this project active and growing!
+
 ## Contributing
 
 Love Simple API Client? Contributions are welcome! Feel free to submit a Pull Request. 
