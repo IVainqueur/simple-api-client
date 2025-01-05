@@ -8,6 +8,7 @@ import {
   exportSession,
   importSession
 } from '../utils/storage';
+import exampleData from '../../../assets/example.json';
 
 const createDefaultRequest = (): Request => ({
   id: crypto.randomUUID(),
@@ -22,7 +23,8 @@ const createDefaultRequest = (): Request => ({
   },
   postResponseCode: {
     code: '// Transform response here\nreturn response.data;',
-    enabled: false
+    enabled: false,
+    autoExecute: false
   },
   cdns: [],
   createdAt: Date.now()
@@ -113,6 +115,17 @@ export function useRequestManagement() {
     }
   };
 
+  const handleTryExample = () => {
+    const exampleRequests = exampleData.requests as Request[];
+    exampleRequests.forEach(request => {
+      saveRequest(request);
+    });
+    setRequests([...requests, ...exampleRequests]);
+    if (!activeRequestId && exampleRequests.length > 0) {
+      setActiveRequestId(exampleRequests[0].id);
+    }
+  };
+
   return {
     requests,
     activeRequestId,
@@ -122,6 +135,7 @@ export function useRequestManagement() {
     handleRequestSelect,
     handleSaveSession,
     handleImportSession,
-    handleExportSession
+    handleExportSession,
+    handleTryExample
   };
 }

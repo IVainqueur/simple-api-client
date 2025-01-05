@@ -1,8 +1,7 @@
-import React from 'react';
-import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { oneDark } from '@codemirror/theme-one-dark';
-import { Play, Code } from 'lucide-react';
+import CodeMirror from '@uiw/react-codemirror';
+import { Code, Play } from 'lucide-react';
 import { CodeSection } from '../types';
 import { formatCode } from '../utils/codeFormatter';
 
@@ -23,9 +22,9 @@ export function CodeEditor({
   canExecute = false,
   onSaveSnippet
 }: CodeEditorProps) {
-  const handleFormat = () => {
+  const handleFormat = async () => {
     try {
-      const formatted = formatCode(value.code);
+      const formatted = await formatCode(value.code);
       onChange({ ...value, code: formatted });
     } catch (error) {
       console.error('Failed to format code:', error);
@@ -75,6 +74,17 @@ export function CodeEditor({
             />
             <span className="text-sm text-gray-600 dark:text-gray-400">Enable</span>
           </label>
+          {label === "Post-response Code" && (
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={value.autoExecute}
+                onChange={(e) => onChange({ ...value, autoExecute: e.target.checked })}
+                className="rounded border-gray-300 dark:border-gray-600"
+              />
+              <span className="text-sm text-gray-600 dark:text-gray-400">Auto-execute</span>
+            </label>
+          )}
         </div>
       </div>
       <div className="flex-1 border rounded-lg overflow-hidden dark:border-gray-700">

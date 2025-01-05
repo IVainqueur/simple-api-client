@@ -9,6 +9,7 @@ export interface ApiResponse {
 export interface CodeSection {
   code: string;
   enabled: boolean;
+  autoExecute?: boolean;
 }
 
 export interface CodeSnippet {

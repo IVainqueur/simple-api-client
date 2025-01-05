@@ -1,24 +1,33 @@
-import { useState } from 'react';
-import axios from 'axios';
-import { Request, ApiResponse } from '../types';
-import { runInSandbox } from '../utils/sandbox';
+import { useCallback, useEffect, useState } from "react";
+import axios from "axios";
+import { Request, ApiResponse } from "../types";
+import { runInSandbox } from "../utils/sandbox";
 
 export function useApiClient(activeRequest: Request | undefined) {
   const [response, setResponse] = useState<ApiResponse | null>(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [requestStartTime, setRequestStartTime] = useState(0);
-  const [processedOutput, setProcessedOutput] = useState('');
-  const [consoleLogs, setConsoleLogs] = useState<Array<{ type: 'log' | 'error' | 'warn'; message: string; timestamp: number }>>([]);
+  const [processedOutput, setProcessedOutput] = useState("");
+  const [consoleLogs, setConsoleLogs] = useState<
+    Array<{
+      type: "log" | "error" | "warn";
+      message: string;
+      timestamp: number;
+    }>
+  >([]);
 
-  const executePreRequestCode = async () => {
+  const executePreRequestCode = useCallback(async () => {
     if (!activeRequest?.preRequestCode.enabled) return;
 
     try {
       const options = {
         method: activeRequest.method.toLowerCase(),
         headers: JSON.parse(activeRequest.headers),
-        data: activeRequest.method !== 'GET' ? JSON.parse(activeRequest.body) : undefined
+        data:
+          activeRequest.method !== "GET"
+            ? JSON.parse(activeRequest.body)
+            : undefined,
       };
 
       const { result: modifiedOptions, logs } = await runInSandbox(
@@ -26,21 +35,33 @@ export function useApiClient(activeRequest: Request | undefined) {
         { options },
         activeRequest.cdns
       );
-      
+
       setConsoleLogs(logs);
-      setError('');
-      
+      setError("");
+
       return modifiedOptions;
     } catch (error: any) {
       setError(`Pre-request code error: ${error.message}`);
       setConsoleLogs(error.logs || []);
       throw error;
     }
-  };
+  }, [
+    activeRequest?.preRequestCode.enabled,
+    activeRequest?.preRequestCode.code,
+    activeRequest?.cdns,
+    activeRequest?.body,
+    activeRequest?.headers,
+    activeRequest?.method,
+  ]);
 
-  const executePostResponseCode = async () => {
+  const executePostResponseCode = useCallback(async () => {
+    console.log({
+      response: response,
+      "activeRequest?.postResponseCode.enabled":
+        activeRequest?.postResponseCode.enabled,
+    });
     if (!response || !activeRequest?.postResponseCode.enabled) return;
-    
+
     try {
       const { result, logs } = await runInSandbox(
         activeRequest.postResponseCode.code,
@@ -49,33 +70,51 @@ export function useApiClient(activeRequest: Request | undefined) {
       );
       setProcessedOutput(result);
       setConsoleLogs(logs);
-      setError('');
+      setError("");
     } catch (err: any) {
       setError(`Post-response code error: ${err.message}`);
       setConsoleLogs(err.logs || []);
     }
-  };
+  }, [
+    response,
+    activeRequest?.postResponseCode.enabled,
+    activeRequest?.cdns,
+    activeRequest?.postResponseCode.code,
+  ]);
 
   const handleRequest = async () => {
     if (!activeRequest) return;
 
+    console.log({
+      "activeRequest.postResponseCode.autoExecute":
+        activeRequest.postResponseCode.autoExecute,
+      "activeRequest.postResponseCode.enabled":
+        activeRequest.postResponseCode.enabled,
+    });
+
     try {
       setIsLoading(true);
       setRequestStartTime(Date.now());
-      setError('');
-      setProcessedOutput('');
+      setError("");
+      setProcessedOutput("");
       setConsoleLogs([]);
-      
+
       let options = {
         method: activeRequest.method.toLowerCase(),
         headers: JSON.parse(activeRequest.headers),
-        data: activeRequest.method !== 'GET' ? JSON.parse(activeRequest.body) : undefined
+        data:
+          activeRequest.method !== "GET"
+            ? JSON.parse(activeRequest.body)
+            : undefined,
       };
 
       if (activeRequest.preRequestCode.enabled) {
         try {
-          options = await executePreRequestCode() || options;
-        } catch (error) {
+          const modifiedOptions = await executePreRequestCode();
+          if (modifiedOptions && typeof modifiedOptions === "object") {
+            options = modifiedOptions as typeof options;
+          }
+        } catch {
           return;
         }
       }
@@ -84,14 +123,10 @@ export function useApiClient(activeRequest: Request | undefined) {
       const apiResponse = {
         data: res.data,
         status: res.status,
-        headers: res.headers
+        headers: res.headers,
       };
-      
-      setResponse(apiResponse);
 
-      if (activeRequest.postResponseCode.enabled) {
-        await executePostResponseCode();
-      }
+      setResponse(apiResponse);
     } catch (err: any) {
       setError(`Request failed: ${err.message}`);
     } finally {
@@ -101,10 +136,25 @@ export function useApiClient(activeRequest: Request | undefined) {
 
   const handleClear = () => {
     setResponse(null);
-    setProcessedOutput('');
-    setError('');
+    setProcessedOutput("");
+    setError("");
     setConsoleLogs([]);
   };
+
+  useEffect(() => {
+    if (
+      response &&
+      activeRequest?.postResponseCode.enabled &&
+      activeRequest?.postResponseCode.autoExecute
+    ) {
+      executePostResponseCode();
+    }
+  }, [
+    response,
+    activeRequest?.postResponseCode.enabled,
+    activeRequest?.postResponseCode.autoExecute,
+    executePostResponseCode,
+  ]);
 
   return {
     response,
@@ -116,6 +166,6 @@ export function useApiClient(activeRequest: Request | undefined) {
     handleRequest,
     handleClear,
     executePreRequestCode,
-    executePostResponseCode
+    executePostResponseCode,
   };
 }

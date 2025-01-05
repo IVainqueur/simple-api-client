@@ -24,7 +24,7 @@ export function ConsoleOutput({ logs }: ConsoleOutputProps) {
         {logs.map((log, index) => (
           <div
             key={`${log.timestamp}-${index}`}
-            className={`${
+            className={`whitespace-pre-wrap ${
               log.type === 'error'
                 ? 'text-red-400'
                 : log.type === 'warn'

@@ -28,7 +28,7 @@ export function CdnManager({ cdns, onCdnChange }: CdnManagerProps) {
           value={newCdn}
           onChange={(e) => setNewCdn(e.target.value)}
           placeholder="Enter CDN URL"
-          className="flex-1 px-3 py-1.5 text-sm border rounded focus:ring-2 focus:ring-blue-500"
+          className="flex-1 px-3 py-1.5 text-sm border rounded focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:focus:ring-blue-500 dark:text-white dark:placeholder:text-gray-400 "
         />
         <button
           onClick={handleAdd}

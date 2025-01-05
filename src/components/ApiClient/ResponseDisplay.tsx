@@ -1,4 +1,3 @@
-import React from 'react';
 import { ApiResponse } from './types';
 
 interface ResponseDisplayProps {

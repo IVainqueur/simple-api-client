@@ -34,6 +34,7 @@ export function RequestNameEdit({ name, onSave, onCancel }: RequestNameEditProps
       <button
         type="submit"
         className="p-1 text-green-600 hover:text-green-700 dark:text-green-500 dark:hover:text-green-400"
+        onClick={handleSubmit}
       >
         <Check size={14} />
       </button>

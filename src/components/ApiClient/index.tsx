@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Layout } from './components/Layout';
 import { RequestPanel } from './components/RequestPanel';
 import { ResponsePanel } from './components/ResponsePanel';
 import { useApiClient } from './hooks/useApiClient';
 import { useRequestManagement } from './hooks/useRequestManagement';
 import { useTheme } from './hooks/useTheme';
-import { Request } from './types';
 
 export default function ApiClient() {
   const [activeTab, setActiveTab] = useState('headers');
@@ -20,7 +19,8 @@ export default function ApiClient() {
     handleRequestSelect,
     handleSaveSession,
     handleImportSession,
-    handleExportSession
+    handleExportSession,
+    handleTryExample
   } = useRequestManagement();
 
   const {
@@ -46,10 +46,11 @@ export default function ApiClient() {
         onRequestSelect={handleRequestSelect}
         onNewRequest={handleNewRequest}
         onDeleteRequest={handleDeleteRequest}
-        onUpdateRequest={handleUpdateRequest}
         onSaveSession={handleSaveSession}
         onImportSession={handleImportSession}
         onExportSession={handleExportSession}
+        onUpdateRequest={handleUpdateRequest}
+        onTryExample={handleTryExample}
       >
         <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
           Create a new request to get started
@@ -70,10 +71,11 @@ export default function ApiClient() {
       onRequestSelect={handleRequestSelect}
       onNewRequest={handleNewRequest}
       onDeleteRequest={handleDeleteRequest}
-      onUpdateRequest={handleUpdateRequest}
       onSaveSession={handleSaveSession}
       onImportSession={handleImportSession}
       onExportSession={handleExportSession}
+      onUpdateRequest={handleUpdateRequest}
+      onTryExample={handleTryExample}
     >
       <RequestPanel
         url={activeRequest.url}

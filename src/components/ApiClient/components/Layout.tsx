@@ -14,6 +14,8 @@ interface LayoutProps {
   onSaveSession: () => void;
   onImportSession: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onExportSession: () => void;
+  onUpdateRequest: (id: string, updates: Partial<Request>) => void;
+  onTryExample: () => void;
   children: React.ReactNode;
 }
 
@@ -28,6 +30,8 @@ export function Layout({
   onSaveSession,
   onImportSession,
   onExportSession,
+  onUpdateRequest,
+  onTryExample,
   children
 }: LayoutProps) {
   return (
@@ -52,6 +56,8 @@ export function Layout({
               onSaveSession={onSaveSession}
               onImportSession={onImportSession}
               onExportSession={onExportSession}
+              onUpdateRequest={onUpdateRequest}
+              onTryExample={onTryExample}
             />
           </ResizablePanel>
           
